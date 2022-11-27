@@ -1,0 +1,91 @@
+
+
+<DrawerClickableItem@MDNavigationDrawerItem>
+    focus_color: "#e7e4c0"
+    text_color: "#4a4939"
+    icon_color: "#4a4939"
+    ripple_color: "#c5bdd2"
+    selected_color: "#0c6c4d"
+
+
+<DrawerLabelItem@MDNavigationDrawerItem>
+    text_color: "#4a4939"
+    icon_color: "#4a4939"
+    focus_behavior: False
+    selected_color: "#4a4939"
+    _no_ripple_effect: True
+
+<MainScreen>:
+
+    MDTopAppBar:
+        id : topbar
+        pos_hint: {"top": 1}
+        elevation: 4
+        title: "MyNavApp"
+        left_action_items: [["menu", lambda x: nav_drawer.set_state("open")]] if screen_manager.current =="bro_screen" or screen_manager.current =="src_screen"  else [["arrow-left", lambda x:app.go_back()]]
+
+
+    MDNavigationLayout:
+        size_hint_y: 1.0 - topbar.height/root.height
+        MDScreenManager:
+            id: screen_manager
+
+            BrowseScreen:
+                name : "bro_screen"
+                id: bro_screen
+            SearchScreen:
+                name : "src_screen"
+                id : src_screen
+            ImageScreen:
+                name : "img_screen"
+                id : img_screen
+
+        MDNavigationDrawer:
+
+            id: nav_drawer
+            radius: (0, 16, 16, 0)
+
+            MDNavigationDrawerMenu:
+
+                MDNavigationDrawerHeader:
+                    title: "MyMenu"
+                    title_color: "#4a4939"
+                    #text: "Header text"
+                    spacing: "4dp"
+                    padding: "12dp", 0, 0, "56dp"
+
+      
+                DrawerClickableItem:
+                    icon: "web"
+                    #right_text: "+99"
+                    #text_right_color: "#4a4939"
+                    text: "Esplora"
+                    on_release:
+                        app.previous = "bro_screen" 
+                        screen_manager.current = "bro_screen"
+                        nav_drawer.set_state("close")
+
+                DrawerClickableItem:
+                    icon: "magnify"
+                    text: "Cerca"
+                    on_release: 
+                        app.previous = "src_screen" 
+                        screen_manager.current = "src_screen"
+                        nav_drawer.set_state("close")
+
+                DrawerClickableItem:
+                    icon: "img"
+                    text: "Screen 2"
+                    on_release: 
+                        app.previous = "img_screen" 
+                        screen_manager.current = "img_screen"
+                        nav_drawer.set_state("close")
+
+
+
+
+                MDNavigationDrawerDivider:
+
+                DrawerLabelItem:
+                    icon: "information-outline"
+                    text: "Info"

@@ -1,0 +1,19 @@
+<ImageScreen>:
+    name :"img_screen"
+    id : img_screen
+    #on_enter: app.root.ids.topbar.left_action_items 
+    MDFloatLayout:
+
+        Scatter:
+            on_size: self.center = win.Window.center
+            size: image.size
+            size_hint: None, None
+
+            AsyncImage:
+                id: image
+                source: '' #root.res_link#"https://www.sardegnadigitallibrary.it/mmt/1024/174652.jpg"#
+                #on_load_fail : print("LOADED",app.res_link)
+
+                # create initial image to be 400 pixels width
+                size: 400, 400 / self.image_ratio
+

@@ -1,0 +1,92 @@
+<BrowseScreen@MDScreen>:
+    name: "bro_screen"
+    id : bro_screen
+    RecycleViewer : 
+
+
+
+
+<RecycleViewer>:
+    viewclass: 'SDLCard'  # defines the viewtype for the data items.
+    orientation: "vertical"
+    id : rv
+
+    RecycleBoxLayout:
+        default_size_hint: 1, None
+        size_hint: 1, None
+        default_size: None, dp(300)
+        default_size_hint: 1, None
+        height: self.minimum_height
+        orientation: "vertical"
+        padding: 10
+        spacing: 5
+
+
+<SDLCard>:
+    id : card
+    line_color:(0.2, 0.2, 0.2, 0.8)
+    line_color:app.theme_cls.accent_dark# root.color
+    shadow_softness: 12
+    shadow_offset : (0, 2)
+    orientation : "vertical"
+    min_height: 600
+    MDBoxLayout: 
+        id : topbar_card
+        orientation: 'horizontal'
+        size_hint :(1,.2)
+        padding : 10, 10
+        spacing : 100
+
+        MDAnchorLayout:
+            anchor_x:"left"
+
+            MDBoxLayout:
+                orientation: "horizontal"
+
+                MDIconButton:
+                    icon_color : app.theme_cls.accent_light #"red"
+                    icon: "play"
+                    on_release: app.play(root)
+
+                MDIconButton:
+                    icon : "web"
+                    md_bg_color : app.theme_cls.accent_light
+                    on_release : root.openlink(root.link)
+
+        MDAnchorLayout:
+            anchor_x:"right"
+
+            MDLabel:
+                text_color: app.theme_cls.primary_color
+                markup: True
+                font_style : "Subtitle2" 
+                text : root.cat
+
+    MDBoxLayout:
+        orientation:'vertical'
+        padding : 10
+
+        MDBoxLayout:
+            #size_hint: (0.45, 1)
+            orientation: "vertical"
+
+            IMG:
+                source : "src/audio.png" if  "audio.svg" in root.img else root.img
+                #size_hint_y:None
+                #allow_stretch: True
+                mipmap:True
+                keep_ratio:False
+                on_touch_up: app.play(root)
+
+
+        MDBoxLayout:
+            orientation :'vertical'
+            adaptive_height : True
+
+            MDLabel:
+                font_style : "Body1" 
+                text:root.title
+                padding :(10,20)
+                adaptive_height: True
+
+
