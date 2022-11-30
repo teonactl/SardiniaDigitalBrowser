@@ -16,18 +16,17 @@
     _no_ripple_effect: True
 
 <MainScreen>:
-
+    
     MDTopAppBar:
         id : topbar
         pos_hint: {"top": 1}
-        elevation: 4
-        title: "MyNavApp"
+        #elevation: 4
         left_action_items: [["menu", lambda x: nav_drawer.set_state("open")]] if screen_manager.current =="bro_screen" or screen_manager.current =="src_screen"  else [["arrow-left", lambda x:app.go_back()]]
-
+        right_action_items : [["magnify", lambda z : app.search_prompt()]]
 
     MDNavigationLayout:
         size_hint_y: 1.0 - topbar.height/root.height
-        MDScreenManager:
+        MyScreenManager:
             id: screen_manager
 
             BrowseScreen:
@@ -39,6 +38,12 @@
             ImageScreen:
                 name : "img_screen"
                 id : img_screen
+            VideoScreen:
+                name : "vid_screen"
+                id : vid_screen
+            AudioScreen:
+                name : "aud_screen"
+                id : aud_screen
 
         MDNavigationDrawer:
 
@@ -74,13 +79,11 @@
                         nav_drawer.set_state("close")
 
                 DrawerClickableItem:
-                    icon: "img"
-                    text: "Screen 2"
+                    icon: "reload"
+                    text: "Ricarica Home"
                     on_release: 
-                        app.previous = "img_screen" 
-                        screen_manager.current = "img_screen"
+                        app.reload_browser()
                         nav_drawer.set_state("close")
-
 
 
 

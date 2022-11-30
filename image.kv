@@ -1,7 +1,6 @@
 <ImageScreen>:
     name :"img_screen"
     id : img_screen
-    #on_enter: app.root.ids.topbar.left_action_items 
     MDFloatLayout:
 
         Scatter:
@@ -11,6 +10,7 @@
 
             AsyncImage:
                 id: image
+                nocache : False
                 source: '' #root.res_link#"https://www.sardegnadigitallibrary.it/mmt/1024/174652.jpg"#
                 #on_load_fail : print("LOADED",app.res_link)
 

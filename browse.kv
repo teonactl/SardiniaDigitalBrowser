@@ -1,12 +1,12 @@
 <BrowseScreen@MDScreen>:
     name: "bro_screen"
     id : bro_screen
-    RecycleViewer : 
+    BrowseViewer : 
 
 
 
 
-<RecycleViewer>:
+<BrowseViewer>:
     viewclass: 'SDLCard'  # defines the viewtype for the data items.
     orientation: "vertical"
     id : rv
@@ -24,7 +24,7 @@
 
 <SDLCard>:
     id : card
-    line_color:(0.2, 0.2, 0.2, 0.8)
+    #line_color:(0.2, 0.2, 0.2, 0.8)
     line_color:app.theme_cls.accent_dark# root.color
     shadow_softness: 12
     shadow_offset : (0, 2)
@@ -44,13 +44,13 @@
                 orientation: "horizontal"
 
                 MDIconButton:
-                    icon_color : app.theme_cls.accent_light #"red"
+                    md_bg_color : app.theme_cls.accent_dark
                     icon: "play"
                     on_release: app.play(root)
 
                 MDIconButton:
                     icon : "web"
-                    md_bg_color : app.theme_cls.accent_light
+                    md_bg_color : app.theme_cls.accent_dark
                     on_release : root.openlink(root.link)
 
         MDAnchorLayout:
@@ -73,10 +73,10 @@
             IMG:
                 source : "src/audio.png" if  "audio.svg" in root.img else root.img
                 #size_hint_y:None
-                #allow_stretch: True
+                allow_stretch: True
                 mipmap:True
-                keep_ratio:False
-                on_touch_up: app.play(root)
+                keep_ratio:True
+                on_press: print("pressed");app.play(root)
 
 
         MDBoxLayout:

@@ -1,5 +1,7 @@
 bin/
-.buildozer(
+.buildozer/
 buildozer.spec
 __pycache__/
 
+shim/
+mockdb.html
