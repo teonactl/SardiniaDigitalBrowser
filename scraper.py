@@ -3,9 +3,12 @@ import bs4
 from bs4 import BeautifulSoup
 from datetime import datetime
 import uuid
+from utils import * 
 
+from markdownify import MarkdownConverter
 
-
+def md(soup, **options):
+    return MarkdownConverter(**options).convert_soup(soup)
 
 #A Scraper for the Search Mode
 def search_scraper(query=""):
@@ -21,7 +24,7 @@ def search_scraper(query=""):
 	base_url = "https://www.sardegnadigitallibrary.it"
 	#paging_url = "https://www.sardegnadigitallibrary.it/index.php?xsl=2451&tipo=0&o=1&c1="+query+"&n="+page_size+"&p="+page
 	paging_url = "https://www.sardegnadigitallibrary.it/index.php?xsl=2451&tipo=0&o=1&c1="+query+"&n=100&p="+str(page)
-	print(paging_url)
+	#print(paging_url)
 	page = requests.get(paging_url)
 	soup = BeautifulSoup(page.content, "html.parser")
 
@@ -41,11 +44,12 @@ def search_scraper(query=""):
 		img = res.find("img",class_="img-responsive")
 		#print("img-->",img["src"])
 		#print("title-->",img["title"])
-		res_o["link"]=link["href"]
-		res_o["img"]=base_url +img["src"] if img["src"].startswith("/") else img["src"]
+		res_o["link"]=sanitize_url(link["href"])
+		res_o["img"]= sanitize_url(img["src"]) #base_url +img["src"] if img["src"].startswith("/") else sanitize_url(img["src"])
 		res_o["title"]=img["title"]#.replace("\"","\'") #.replace("\'","\`" )
 		res_o["cat"]=cat.text
-		res_o["uid"]= uuid.uuid1().__str__()
+		res_o["uid"]= str(abs(hash( res_o["link"]+res_o["title"]))) #uuid.uuid1().__str__()
+		res_o["preferito"]= False
 		res_list.append(res_o)
 	return res_list
 
@@ -65,25 +69,36 @@ def res_scraper(res_type,url):
 		par = soup.find_all("ul", class_="dropdown-menu")
 		par1 = par[0].find_all("a")
 		res_o["url"] = par1[-1]["href"]
-		res_o["desc"] = soup.find("div",class_="row clear-fix").text
+		desc = soup.find("div", {"class":"row clear-fix"})
+		res_o["desc"] = md(desc,strip=['a'])
 		return res_o
 
 	elif res_type == "VIDEO":
 		v_el =soup.find("video", {"id": "video"})
 		s_el = v_el.find("source")
+		desc = soup.find("div", {"class":"row clear-fix"})
+		res_o["desc"] = md(desc,strip=['a'])
 		res_o["poster"] = v_el["poster"]
 		res_o["url"] = s_el["src"]
 		return res_o
 
 	elif res_type == "AUDIO":
 		a_el =soup.find("a", {"title": "versione mp3"})
+		desc = soup.find("div", {"class":"row clear-fix"})
+		res_o["desc"] = md(desc,strip=['a'])
 		res_o["url"] = a_el["href"]
 		return res_o
+	elif res_type == "TESTI":
+		t_el =soup.find("a", {"class": "titlet r-space"})["href"]
+		desc = soup.find("div", {"class":"row clear-fix"})
+		res_o["url"] = t_el
+		res_o["desc"] =md(desc,strip=['a'])
+		return res_o
+	
+
 
 	#print(res_o)
 
-
-res_scraper("AUDIO", "https://www.sardegnadigitallibrary.it/index.php?xsl=2436&s=17&v=9&c=4462&id=681404")
-
+#res_scraper("TESTI", "https://www.sardegnadigitallibrary.it/index.php?xsl=2436&s=17&v=9&c=4463&id=205666")
 
 

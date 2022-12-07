@@ -1,17 +1,19 @@
 <BrowseScreen@MDScreen>:
     name: "bro_screen"
     id : bro_screen
-    BrowseViewer : 
 
+    BrowseViewer : 
+        id : rv
 
 
 
 <BrowseViewer>:
     viewclass: 'SDLCard'  # defines the viewtype for the data items.
     orientation: "vertical"
-    id : rv
 
     RecycleBoxLayout:
+        radius : 24 , 24
+        adaptive_height: True
         default_size_hint: 1, None
         size_hint: 1, None
         default_size: None, dp(300)
@@ -23,6 +25,7 @@
 
 
 <SDLCard>:
+    radius : 24, 24
     id : card
     #line_color:(0.2, 0.2, 0.2, 0.8)
     line_color:app.theme_cls.accent_dark# root.color
@@ -30,63 +33,40 @@
     shadow_offset : (0, 2)
     orientation : "vertical"
     min_height: 600
-    MDBoxLayout: 
-        id : topbar_card
-        orientation: 'horizontal'
-        size_hint :(1,.2)
-        padding : 10, 10
-        spacing : 100
-
-        MDAnchorLayout:
-            anchor_x:"left"
-
-            MDBoxLayout:
-                orientation: "horizontal"
-
-                MDIconButton:
-                    md_bg_color : app.theme_cls.accent_dark
-                    icon: "play"
-                    on_release: app.play(root)
-
-                MDIconButton:
-                    icon : "web"
-                    md_bg_color : app.theme_cls.accent_dark
-                    on_release : root.openlink(root.link)
-
-        MDAnchorLayout:
-            anchor_x:"right"
-
-            MDLabel:
-                text_color: app.theme_cls.primary_color
-                markup: True
-                font_style : "Subtitle2" 
-                text : root.cat
-
-    MDBoxLayout:
-        orientation:'vertical'
-        padding : 10
-
-        MDBoxLayout:
-            #size_hint: (0.45, 1)
-            orientation: "vertical"
-
-            IMG:
-                source : "src/audio.png" if  "audio.svg" in root.img else root.img
-                #size_hint_y:None
-                allow_stretch: True
-                mipmap:True
-                keep_ratio:True
-                on_press: print("pressed");app.play(root)
+   
+    MDSmartTile:
+        radius: 24
+        box_radius: [0, 0, 24, 24]
+        source : "src/audio.png" if  "audio.svg" in root.img else root.img
+        size_hint_y:1
+        allow_stretch: True
+        mipmap:True
+        keep_ratio:True
+        on_press: print("pressed");app.play(root)
+        lines : 2
 
 
-        MDBoxLayout:
-            orientation :'vertical'
-            adaptive_height : True
 
-            MDLabel:
-                font_style : "Body1" 
-                text:root.title
-                padding :(10,20)
-                adaptive_height: True
+        MyFButton:
+            link : root.link
+            icon: "dots-vertical"
+            theme_icon_color: "Custom"
+            #icon_color: 1, 0, 0, 1
+            pos_hint: {"center_y": .5}
+            on_release: root.open_menu(self)
 
+        TwoLineListItem:
+            radius : 24, 24
+            text: f"[color=#ffffff][b]{root.cat}[/b][/color]"
+            secondary_text: f"[color=#808080][b]{root.title}[/b][/color]"
+            pos_hint: {"center_y": .5}
+            _no_ripple_effect: True
+
+        MDIconButton:
+            id: pref_icon
+            icon: "star" if app.root.ids.screen_manager.current == "bro_screen" else "delete"
+            theme_icon_color: "Custom"
+            icon_color: 1, 1, 0, .75
+            pos_hint: {"center_y": .5}
+            on_release: root.store_preferito(root)
 

@@ -1,0 +1,28 @@
+<TextScreen@MDScreen>:
+    name: "txt_screen"
+    id : txt_screen
+    MDBoxLayout:
+        orientation: "vertical"
+     
+        MDGridLayout:
+            cols: 1 #orientation: "vertical"
+            ScrollView:
+                MDBoxLayout:
+                    adaptive_height: True
+                    orientation: "vertical"
+                    padding: 10
+                    MDLabel:
+                        adaptive_height: True
+                        id : txt_label
+                        markup: True
+        AnchorLayout:
+            anchor_x : "center"
+            anchor_y : "bottom"
+            MyButton:
+                id : bubb
+                icon_size: "60dp"
+                icon : "file-pdf-box"
+                id : txt_button
+                text: "Apri sul Browser"
+                on_release : app.openlink(self.link)
+        

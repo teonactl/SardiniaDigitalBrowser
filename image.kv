@@ -1,19 +1,45 @@
+
 <ImageScreen>:
     name :"img_screen"
     id : img_screen
-    MDFloatLayout:
+    #on_leave :  s = gen; self.clear_widgets(); self.add_widget(s) #image.reload()#print(image.size); image.size = dp(400), dp(400)
+    on_enter : image.size =  dp(400), dp(400) / image.image_ratio; print (image.size)
+    MDBoxLayout:
+        id :gen
+        orientation: "vertical"
+        padding : 10
 
-        Scatter:
-            on_size: self.center = win.Window.center
-            size: image.size
-            size_hint: None, None
+        MDGridLayout:
+            cols: 1 #orientation: "vertical"
+            size_hint_y : .4
+            ScrollView:
+                MDBoxLayout:
+                    adaptive_height: True
+                    orientation: "vertical"
+                    padding: 10
+                    MDLabel:
+                        adaptive_height: True
+                        id : img_label
+                        markup: True
+                            
 
-            AsyncImage:
-                id: image
-                nocache : False
-                source: '' #root.res_link#"https://www.sardegnadigitallibrary.it/mmt/1024/174652.jpg"#
-                #on_load_fail : print("LOADED",app.res_link)
+        StencilView:
+            id: f_lay
+            size_hint_y : .6
 
-                # create initial image to be 400 pixels width
-                size: 400, 400 / self.image_ratio
+            ScatterLayout:
+                #on_size: self.center = img_screen.center
+                size: image.size
+                size_hint: None, None
+                do_translation_y : False
 
+                AsyncImage:
+                    id: image
+                    nocache : False
+                    source: '' 
+                    #on_load_fail : print("LOADED",app.res_link)
+
+                    # create initial image to be 400 pixels width
+                    size: 400, 400 / self.image_ratio
+
+         

@@ -7,15 +7,17 @@ from kivy.lang import Builder
 from kivy.core.window import Window
 from kivy.storage.jsonstore import JsonStore
 from kivy.metrics import dp
-
+from kivy.uix.stencilview import StencilView
 from kivymd.app import MDApp
-
 from kivymd.uix.screen import MDScreen
 from kivymd.uix.screenmanager import MDScreenManager
 from kivymd.uix.toolbar import MDTopAppBar
 from kivymd.uix.textfield import MDTextField
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.button import MDIconButton
+
+
+
 
 import webbrowser
 from scraper import *
@@ -34,15 +36,17 @@ ssl._create_default_https_context = ssl._create_unverified_context
 
 if kivy.platform == "linux":
     Window.size = (450, 740)
+    #Window.size = (740,450)
 
 
 
 # The main kv file is loaded indipendently because of naming rules [ call it like your App class instance less the final "App" eg: NavigationApp--> navigation.kv]
 Builder.load_file("browse.kv")
-Builder.load_file("search.kv")
+Builder.load_file("preferiti.kv")
 Builder.load_file("image.kv")
 Builder.load_file("video.kv")
 Builder.load_file("audio.kv")
+Builder.load_file("texts.kv")
 
 store = JsonStore('db.json')
 
@@ -53,6 +57,11 @@ class MainScreen(MDScreen):
 class MyScreenManager(MDScreenManager):
     pass
 
+class BoxStencil(MDBoxLayout, StencilView):
+    pass
+
+class MyButton(MDIconButton):
+    link = StringProperty()
 
 
 
@@ -65,11 +74,21 @@ class SDLApp(MDApp):
         self.theme_cls.primary_hue = "500"
         self.theme_cls.accent_hue = "800"
         #print("themes ",dir(self.theme_cls))
-
         self.res_link = ""
         self.previous = "bro_screen"
         self.left_action_items = []
         self.right_action_items = []
+        self.store = store
+
+    def build(self):
+
+        return MainScreen()
+
+
+    def openlink(self, url):
+        url = sanitize_url(url)
+        webbrowser.open(url)
+
     def reload_browser(self):
         print("reload")
         l = search_scraper(query="formaggio")
@@ -80,16 +99,41 @@ class SDLApp(MDApp):
 
 
 
-    def build(self):
-        #self.theme_cls.theme_style = "Dark"
-        return MainScreen()
+        
     def go_back(self):
-        print("goback ", self.previous)
+        #print("goback ", self.previous)
         self.root.ids.screen_manager.current = self.previous
+
     def go_back_src(self, *args):
         self.root.ids.topbar.remove_widget(self.root.ids.topbar.children[0])
         self.root.ids.topbar.left_action_items = self.left_action_items
         self.root.ids.topbar.right_action_items = self.right_action_items
+
+
+    def tab_switch(self,*args):
+        #print("switch->",args)
+        #print("switch->",args[-1])
+        new_l = []
+        scr = self.root.ids.screen_manager.current
+        store.store_load()
+        if scr == "bro_screen":
+            st = store["db"]
+        elif scr == "pre_screen":
+            st =store["preferiti"]
+
+        print("switching from", scr, args[-1])
+
+        if args[-1]=="Tutti":
+
+            self.root.ids.screen_manager.current_screen.children[0].data = st
+
+            return
+
+        for i in st:
+             if i["cat"]==args[-1].upper():
+                    new_l.append(i)
+        store.store_sync()
+        self.root.ids.screen_manager.current_screen.children[0].data = new_l
 
 
     def research_contents(self,b):
@@ -111,8 +155,9 @@ class SDLApp(MDApp):
         store.store_put("db",l)
         store.store_sync()
         #print(self.root.ids.bro_screen.children)
+
         self.root.ids.bro_screen.children[0].data = store["db"]
-        #self.root.ids.bro_screen.children[0].update()
+        self.root.ids.tabs.switch_tab("Tutti")
         #self.root.ids.screen_manager.current = "bro_screen" 
 
 
@@ -148,6 +193,8 @@ class SDLApp(MDApp):
             s_url = sanitize_url(root.link)
             res_o = res_scraper("IMMAGINI",s_url)
             self.root.ids.img_screen.ids.image.source = sanitize_url(res_o["url"] )
+            self.root.ids.img_screen.ids.img_label.text =res_o["desc"].replace("** ", "[/b]").replace("**","[b]")
+            self.root.ids.img_screen.ids.size = (400, 400 )#/ self.image_ratio
             self.previous = self.root.ids.screen_manager.current
             self.root.ids.screen_manager.current = "img_screen" 
             return
@@ -160,11 +207,9 @@ class SDLApp(MDApp):
             self.root.ids.aud_screen.ids.aud_box.clear_widgets()
             res_o = res_scraper("AUDIO",sanitize_url(s_url))
             if kivy.platform == "android":
-                mp = MusicPlayerAndroid()
-                mp.load(sanitize_url(res_o["url"]))
+                mp = MusicPlayerAndroid(audio_track = sanitize_url(res_o["url"]), poster ="./res/audio.png", innerlabel = res_o["desc"])
                 mp.build()
-                #print("Mp ANDROID-->"*10,dir(mp))
-                #mp.play()
+                mp.playaudio("start")
                 self.root.ids.aud_screen.ids.aud_box.add_widget(mp)
                 self.previous = self.root.ids.screen_manager.current
                 self.root.ids.screen_manager.current = "aud_screen"  
@@ -172,42 +217,39 @@ class SDLApp(MDApp):
                 return
 
             elif kivy.platform =="linux" :
-                mp = MusicPlayer()
-                #print("Mp LINUX-->"*10,dir(mp))
-                mp.build( sanitize_url(res_o["url"]), "./res/audio.png")
+                mp = MusicPlayer(audio_track = sanitize_url(res_o["url"]), poster ="./res/audio.png",innerlabel = res_o["desc"])
+                mp.build()
+                mp.playaudio("start")
                 self.root.ids.aud_screen.ids.aud_box.add_widget(mp)
                 self.previous = self.root.ids.screen_manager.current
                 self.root.ids.screen_manager.current = "aud_screen"  
-                #print("going to ", sanitize_url(res_o["url"]))
                 return
 
 
         if root.cat == "VIDEO":
-            #print("VIDEO")         
             s_url = sanitize_url(root.link)
             res_o = res_scraper("VIDEO",s_url)
-            #player = VPlayer()
-            #player.source = res_o["url"]
-            #print(dir(player))
-            #WHY is not working!!??
-            #player.thumbnail=sanitize_url(res_o["poster"])#"https://pngimg.com/uploads/pineapple/pineapple_PNG2750.png"
-            #player.fullscreen = True
-            #player.state = "play"
-            #self.root.ids.vid_screen.ids.vid_box.clear_widgets()
-            #self.root.ids.vid_screen.ids.vid_box.add_widget(player)
-            #player.do_layout()
             self.root.ids.vid_screen.ids.video_player.source = sanitize_url(res_o["url"])
             self.root.ids.vid_screen.ids.video_player.thumbnail = sanitize_url(res_o["poster"])
+            self.root.ids.vid_screen.ids.video_label.text =res_o["desc"].replace("** ", "[/b]").replace("**","[b]")
             self.previous = self.root.ids.screen_manager.current
             self.root.ids.screen_manager.current = "vid_screen"        
             return
 
         if root.cat == "TESTI":
-            #print(root.link)
             print("TESTI")
+            s_url = sanitize_url(root.link)
+            res_o = res_scraper("TESTI",s_url)
+            self.root.ids.txt_screen.ids.txt_label.text = res_o["desc"].replace("** ", "[/b]").replace("**","[b]")
+            self.root.ids.txt_screen.ids.txt_button.link = sanitize_url(res_o["url"])
+            self.previous = self.root.ids.screen_manager.current
+            self.root.ids.screen_manager.current = "txt_screen"        
+            return
+        
         else:
             print("default")
                 
+
 
 
 

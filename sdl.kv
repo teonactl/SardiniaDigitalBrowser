@@ -16,79 +16,130 @@
     _no_ripple_effect: True
 
 <MainScreen>:
-    
-    MDTopAppBar:
-        id : topbar
-        pos_hint: {"top": 1}
-        #elevation: 4
-        left_action_items: [["menu", lambda x: nav_drawer.set_state("open")]] if screen_manager.current =="bro_screen" or screen_manager.current =="src_screen"  else [["arrow-left", lambda x:app.go_back()]]
-        right_action_items : [["magnify", lambda z : app.search_prompt()]]
+    MDBoxLayout:
+        id : main_box
+        orientation: "vertical"
+        tabs: tabs.__self__
 
-    MDNavigationLayout:
-        size_hint_y: 1.0 - topbar.height/root.height
-        MyScreenManager:
-            id: screen_manager
+        adaptive_height : True
+        size_hint_y : 1
+        MDTopAppBar:
+            id : topbar
+            auto_bring_to_front: True
 
-            BrowseScreen:
-                name : "bro_screen"
-                id: bro_screen
-            SearchScreen:
-                name : "src_screen"
-                id : src_screen
-            ImageScreen:
-                name : "img_screen"
-                id : img_screen
-            VideoScreen:
-                name : "vid_screen"
-                id : vid_screen
-            AudioScreen:
-                name : "aud_screen"
-                id : aud_screen
+            pos_hint: {"top": 1}
+            #elevation: 4
+            left_action_items: [["menu", lambda x: nav_drawer.set_state("open")]] if screen_manager.current =="bro_screen" or screen_manager.current =="pre_screen"  else [["arrow-left", lambda x:app.go_back()]]
+            right_action_items : [["magnify", lambda z : app.search_prompt()]]
+        
+        MDTabs:
+            on_tab_switch: app.tab_switch(*args)
+            height :  self.tab_bar_height
+            size_hint_y: None
+            height: dp(50) #root.height -(root.ids.main_box.ids.topbar.height + nav_layout.height)
+            tab_indicator_type : "fill" 
+            id : tabs
+            Tab:            
+                title: "Tutti"
+                id : tutti
+            Tab:
+                title: "Video"
+                id: video
+            Tab:
+                title: "Immagini"
+                id: immagini
+            Tab:
+                title: "Audio"
+                id : audio
+            Tab:
+                title: "Testi"
+                id :testi       
 
-        MDNavigationDrawer:
+        MDNavigationLayout:
+            id : nav_layout
+            #size_hint_y: 1.0 #- topbar.height/root.height
+            size_hint_y: 1
 
-            id: nav_drawer
-            radius: (0, 16, 16, 0)
+            MyScreenManager:
+                on_current : main_box.remove_widget(tabs) 
+                id: screen_manager
 
-            MDNavigationDrawerMenu:
+                BrowseScreen:
 
-                MDNavigationDrawerHeader:
-                    title: "MyMenu"
-                    title_color: "#4a4939"
-                    #text: "Header text"
-                    spacing: "4dp"
-                    padding: "12dp", 0, 0, "56dp"
+                    #size_hint: 1,1 
+                    on_enter : app.store.store_sync(); main_box.add_widget(tabs, -1);tabs.switch_tab("Tutti")
 
-      
-                DrawerClickableItem:
-                    icon: "web"
-                    #right_text: "+99"
-                    #text_right_color: "#4a4939"
-                    text: "Esplora"
-                    on_release:
-                        app.previous = "bro_screen" 
-                        screen_manager.current = "bro_screen"
-                        nav_drawer.set_state("close")
+                    name : "bro_screen"
+                    id: bro_screen
+                   
+                PrefScreen:
+                    on_enter : main_box.add_widget(tabs, -1); tabs.switch_tab("Tutti")
 
-                DrawerClickableItem:
-                    icon: "magnify"
-                    text: "Cerca"
-                    on_release: 
-                        app.previous = "src_screen" 
-                        screen_manager.current = "src_screen"
-                        nav_drawer.set_state("close")
+                    name : "pre_screen"
+                    id : pre_screen
+                ImageScreen:
+                    name : "img_screen"
+                    id : img_screen
+                VideoScreen:
+                    #on_enter : main_box.remove_widget(tabs)
 
-                DrawerClickableItem:
-                    icon: "reload"
-                    text: "Ricarica Home"
-                    on_release: 
-                        app.reload_browser()
-                        nav_drawer.set_state("close")
+                    name : "vid_screen"
+                    id : vid_screen
+                AudioScreen:
+                    name : "aud_screen"
+                    id : aud_screen
+                TextScreen:
+                    name : "txt_screen"
+                    id : txt_screen
+
+            MDNavigationDrawer:
+                size_hint_y: 1
+
+                id: nav_drawer
+                radius: (0, 16, 16, 0)
+
+                MDNavigationDrawerMenu:
+
+                    MDNavigationDrawerHeader:
+                        title: "MyMenu"
+                        title_color: "#4a4939"
+                        #text: "Header text"
+                        spacing: "4dp"
+                        padding: "12dp", 0, 0, "56dp"
+
+          
+                    DrawerClickableItem:
+                        icon: "web"
+                        #right_text: "+99"
+                        #text_right_color: "#4a4939"
+                        text: "Esplora"
+                        on_release:
+                            app.previous = "bro_screen" 
+                            screen_manager.current = "bro_screen"
+                            nav_drawer.set_state("close")
+
+                    DrawerClickableItem:
+                        icon: "star"
+                        text: "Preferiti"
+                        #right_text: str(len(app.store["preferiti"]))
+                        on_release: 
+                            app.previous = "pre_screen" 
+                            screen_manager.current = "pre_screen"
+                            nav_drawer.set_state("close")
+
+                    DrawerClickableItem:
+                        icon: "reload"
+                        text: "Ricarica Home"
+                        on_release: 
+                            app.reload_browser()
+                            nav_drawer.set_state("close")
 
 
 
-                MDNavigationDrawerDivider:
+                    MDNavigationDrawerDivider:
 
-                DrawerLabelItem:
-                    icon: "information-outline"
-                    text: "Info"
+                    DrawerLabelItem:
+                        icon: "information-outline"
+                        text: "Info"
+
+

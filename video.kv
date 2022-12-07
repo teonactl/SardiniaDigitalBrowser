@@ -1,13 +1,34 @@
+
 <VideoScreen@MDScreen>:
     name: "vid_screen"
     id : vid_screen
     on_leave : print("leaving..");video_player.state = 'stop'
     MDBoxLayout:
         orientation: "vertical"
-        id: vid_box
+     
+        MDGridLayout:
+            cols: 1 #orientation: "vertical"
+            id: vid_box
+            ScrollView:
+                id : sv_video
+                MDBoxLayout:
+                    id : box_video_label
+                    adaptive_height: True
+                    orientation: "vertical"
+                    padding: 10
+                    MDLabel:
+                        adaptive_height: True
+                        id : video_label
+                        markup: True
+                            
         VideoPlayer:
+            padding: 10
+
+            #pos_hint: {'top': 1.0}
+            #adaptive_height: False
+            height: 400
+            size_hint : 1 , None
             id : video_player 
             no_cache : False
             options: {'allow_stretch': True}
-            #thumbnail : "https://www.regione.sardegna.it/media/thumbnails/360/17_158_20080630092633.jpg"
-            
+       

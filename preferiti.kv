@@ -1,0 +1,21 @@
+<PrefScreen@MDScreen>:
+    name: "pre_screen"
+    id : pre_screen
+    PreferitiViewer : 
+        id : prv
+
+
+<PreferitiViewer>:
+    viewclass: 'SDLCard'  # defines the viewtype for the data items.
+    orientation: "vertical"
+
+    RecycleBoxLayout:
+        adaptive_height: True
+        default_size_hint: 1, None
+        size_hint: 1, None
+        default_size: None, dp(300)
+        default_size_hint: 1, None
+        height: self.minimum_height
+        orientation: "vertical"
+        padding: 10
+        spacing: 5
