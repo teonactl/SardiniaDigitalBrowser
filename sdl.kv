@@ -103,7 +103,8 @@
                         spacing: "4dp"
                         padding: "12dp", 0, 0, "56dp"
 
-          
+                    MDNavigationDrawerDivider:
+
                     DrawerClickableItem:
                         icon: "web"
                         text: "Esplora"
@@ -121,15 +122,6 @@
                             app.previous = "pre_screen" 
                             screen_manager.current = "pre_screen"
                             nav_drawer.set_state("close")
-
-                    DrawerClickableItem:
-                        icon: "reload"
-                        text: "Ricarica Home"
-                        on_release: 
-                            app.reload_browser()
-                            nav_drawer.set_state("close")
-
-
 
                     MDNavigationDrawerDivider:
 
