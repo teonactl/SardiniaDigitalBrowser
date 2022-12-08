@@ -20,42 +20,6 @@ else :
 
 
 
-md = """
-
-
-**Titolo:**  Conversazioni teatrali : n. 9  
-**Autore:**  Meazza Donatella  
-**Regia:**  Meazza Donatella
-
-**Editore:**  Rai Sardegna  
-**Data di trasmissione:**  2019/10/03  
-**Emittente:**  Radio Rai Sardegna  
-**Data di creazione:**  2019/10/03
-
-**Programma:**  Conversazioni teatrali  
-**Conduttore:**  Meazza Donatella  
-**Raccolta:**  Archivio Rai
-
-
-**Tipologia:**  trasmissioni radiofoniche  
-**Argomento:**  Economia e società, Spettacolo  
-**Lingua:**  italiano  
-**Diritti:**  © RAI – Radiotelevisione Italiana  
-**Condizioni di utilizzo:**  Alcuni diritti riservati  
-**Licenza:**  Creative Commons: Attribuzione - Non commerciale - Condividi allo stesso modo 4.0 Internazionale (CC BY-NC-SA 4.0)
-
-
-**Descrizione:**  A tu per tu con i grandi protagonisti della scena teatrale sarda
-
-**Note:**  E' intervenuta: Maria Grazia Sughi
-
-**ID:** 681404  
-**Link risorsa:** //www.sardegnadigitallibrary.it/index.php?xsl=2436&id=681404  
-
-
-
-
-""".replace("** ", "[/b]").replace("**","[b]")
 class MySlider(Slider):
 
     def __init__(self, **kwargs):

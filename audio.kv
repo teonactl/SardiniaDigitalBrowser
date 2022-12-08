@@ -1,7 +1,7 @@
 <AudioScreen@MDScreen>:
     name: "aud_screen"
     id : aud_screen
-    on_leave : print("leaving.."); aud_box.children[0].stopaudio("cs")
+    on_leave : print("leaving.."); #aud_box.children[0].stopaudio("cs")
     MDBoxLayout:
         orientation: "vertical"
         id: aud_box

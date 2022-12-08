@@ -5,6 +5,7 @@ from kivymd.uix.tab import MDTabsBase
 from kivymd.uix.floatlayout import MDFloatLayout
 
 from kivymd.app import MDApp
+from kivy.app import App
 from kivy.uix.recycleview.views import RecycleDataViewBehavior
 
 from kivy.storage.jsonstore import JsonStore
@@ -84,6 +85,8 @@ class SDLCard(RecycleDataViewBehavior, MDCard):
             intent.setType('text/plain')
             chooser = Intent.createChooser(intent, String(title))
             PythonActivity.mActivity.startActivity(chooser)
+        else :
+            toast("Non implementato...")
 
 
     def store_preferito(self, obj):
@@ -94,6 +97,8 @@ class SDLCard(RecycleDataViewBehavior, MDCard):
         tabs = self.app.root.ids.tabs
         store.store_load()
         pref = store["preferiti"]
+        self.app.last_tab = tabs.get_current_tab().title
+        print(self.app.last_tab)
         if any(ob['uid'] == obj.uid for ob in pref):
             if manager.current == "bro_screen":
                 return toast("E' già nei Preferiti!")
@@ -101,23 +106,27 @@ class SDLCard(RecycleDataViewBehavior, MDCard):
                 for o in store["preferiti"]:
                     if o["uid"] == obj.uid:
                         pref.pop(pref.index(o))
-                        store.store_load()
                         store.store_put("preferiti", pref)
                         store.store_sync()
+                        print(self.app.last_tab)
+
                         prv.update()
-                        tabs.switch_tab("Tutti")
-                        return toast("Eliminato dai Preferiti")
+                        self.app.tab_switch(self.app.last_tab)
+
+                        toast("Eliminato dai Preferiti")
+                        return
 
 
        
         pref.append({"link": obj.link, "img":obj.img, "title":obj.title,"cat":obj.cat,"uid":obj.uid })
-        store.store_load()
         store.store_put("preferiti", pref)
         store.store_sync()
+        tabs.switch_tab(self.app.last_tab)
 
-        rv.update()
-        tabs.switch_tab("Tutti")
-        return  toast(f"Aggiunto ai preferiti!")
+        #rv.update()
+        print(self.app.last_tab)
+        toast(f"Aggiunto ai preferiti!")
+        return
       
 
 

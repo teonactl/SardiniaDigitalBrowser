@@ -9,6 +9,7 @@ from kivy.storage.jsonstore import JsonStore
 from kivy.metrics import dp
 from kivy.uix.stencilview import StencilView
 from kivymd.app import MDApp
+from kivy.app import App
 from kivymd.uix.screen import MDScreen
 from kivymd.uix.screenmanager import MDScreenManager
 from kivymd.uix.toolbar import MDTopAppBar
@@ -79,6 +80,7 @@ class SDLApp(MDApp):
         self.left_action_items = []
         self.right_action_items = []
         self.store = store
+        self.last_tab = "Tutti"
 
     def build(self):
 
@@ -100,7 +102,7 @@ class SDLApp(MDApp):
 
 
         
-    def go_back(self):
+    def go_back(self, *args):
         #print("goback ", self.previous)
         self.root.ids.screen_manager.current = self.previous
 
@@ -108,7 +110,9 @@ class SDLApp(MDApp):
         self.root.ids.topbar.remove_widget(self.root.ids.topbar.children[0])
         self.root.ids.topbar.left_action_items = self.left_action_items
         self.root.ids.topbar.right_action_items = self.right_action_items
-
+        self.root.ids.screen_manager.current = self.previous
+        print("goback to tab-> ", self.last_tab)
+        self.tab_switch(self.last_tab)
 
     def tab_switch(self,*args):
         #print("switch->",args)
@@ -121,7 +125,7 @@ class SDLApp(MDApp):
         elif scr == "pre_screen":
             st =store["preferiti"]
 
-        print("switching from", scr, args[-1])
+        #print("switching from", scr, args[-1])
 
         if args[-1]=="Tutti":
 
@@ -133,6 +137,8 @@ class SDLApp(MDApp):
              if i["cat"]==args[-1].upper():
                     new_l.append(i)
         store.store_sync()
+        print("Last tab->", args[-1])
+        self.last_tab = args[-1]
         self.root.ids.screen_manager.current_screen.children[0].data = new_l
 
 
@@ -167,8 +173,8 @@ class SDLApp(MDApp):
         self.root.ids.topbar.left_action_items = []
         self.root.ids.topbar.right_action_items = []
         boxlayout = MDBoxLayout(id = "headbox", orientation= "horizontal",padding=10)
-        search_content = MDTextField(icon_left='magnify',
-                                          mode='round',
+        search_content = MDTextField(  icon_left='magnify',
+                                          mode='line',
                                           #focus = True,
                                           line_color_normal=(1, 0, 1, 1),
                                           line_color_focus=(0, 0, 1, 1),
@@ -180,10 +186,17 @@ class SDLApp(MDApp):
         back_icon = MDIconButton( icon = "arrow-left",on_release=self.go_back_src )
         boxlayout.add_widget(search_content)
         boxlayout.add_widget(back_icon)
-        sear_p = MDTextField(icon_right =  "magnify")
-        sear_p.fill_color= [0, 0, 0, .4 ]
-        sear_p.text_color= "black"
-        sear_p.hint_text: 'Empty field'
+        self.root.ids.topbar.add_widget(boxlayout)
+    def create_res_tbar(self):
+        print("create_res_tbar")
+        self.left_action_items = self.root.ids.topbar.left_action_items
+        self.right_action_items = self.root.ids.topbar.right_action_items
+        self.root.ids.topbar.left_action_items = []
+        self.root.ids.topbar.right_action_items = []
+        boxlayout = MDBoxLayout(id = "headbox", orientation= "horizontal",padding=10)
+
+        back_icon = MDIconButton( icon = "arrow-left",on_release=self.go_back_src )
+        boxlayout.add_widget(back_icon)
         self.root.ids.topbar.add_widget(boxlayout)
 
 
@@ -209,7 +222,7 @@ class SDLApp(MDApp):
             if kivy.platform == "android":
                 mp = MusicPlayerAndroid(audio_track = sanitize_url(res_o["url"]), poster ="./res/audio.png", innerlabel = res_o["desc"])
                 mp.build()
-                mp.playaudio("start")
+                #mp.playaudio("start")
                 self.root.ids.aud_screen.ids.aud_box.add_widget(mp)
                 self.previous = self.root.ids.screen_manager.current
                 self.root.ids.screen_manager.current = "aud_screen"  
@@ -219,7 +232,7 @@ class SDLApp(MDApp):
             elif kivy.platform =="linux" :
                 mp = MusicPlayer(audio_track = sanitize_url(res_o["url"]), poster ="./res/audio.png",innerlabel = res_o["desc"])
                 mp.build()
-                mp.playaudio("start")
+                #mp.playaudio("start")
                 self.root.ids.aud_screen.ids.aud_box.add_widget(mp)
                 self.previous = self.root.ids.screen_manager.current
                 self.root.ids.screen_manager.current = "aud_screen"  

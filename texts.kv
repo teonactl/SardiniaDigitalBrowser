@@ -6,6 +6,7 @@
      
         MDGridLayout:
             cols: 1 #orientation: "vertical"
+            size_hint_y : .8
             ScrollView:
                 MDBoxLayout:
                     adaptive_height: True
@@ -16,6 +17,8 @@
                         id : txt_label
                         markup: True
         AnchorLayout:
+            size_hint_y : .2
+
             anchor_x : "center"
             anchor_y : "bottom"
             MyButton:
