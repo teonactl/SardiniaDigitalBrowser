@@ -81,6 +81,10 @@ class SDLApp(MDApp):
         self.right_action_items = []
         self.store = store
         self.last_tab = "Tutti"
+        self.n_pages = store["n_pages"]
+        self.s_scraper = search_scraper
+        self.a_query = store["a_query"]
+        self.a_page = store["a_page"]
 
     def build(self):
 
@@ -90,15 +94,6 @@ class SDLApp(MDApp):
     def openlink(self, url):
         url = sanitize_url(url)
         webbrowser.open(url)
-
-    def reload_browser(self):
-        print("reload")
-        l = search_scraper(query="formaggio")
-
-        store.store_put("db",l)
-        store.store_sync()
-        self.root.ids.bro_screen.children[0].data = store["db"]
-
 
 
         
@@ -130,14 +125,14 @@ class SDLApp(MDApp):
         if args[-1]=="Tutti":
 
             self.root.ids.screen_manager.current_screen.children[0].data = st
-
+            self.last_tab = args[-1]
             return
 
         for i in st:
              if i["cat"]==args[-1].upper():
                     new_l.append(i)
         store.store_sync()
-        print("Last tab->", args[-1])
+        #print("Last tab->", args[-1])
         self.last_tab = args[-1]
         self.root.ids.screen_manager.current_screen.children[0].data = new_l
 
@@ -154,10 +149,14 @@ class SDLApp(MDApp):
         self.root.ids.topbar.right_action_items = self.right_action_items
 
         #print("Query---> ",b.text)
-        l = search_scraper(query=str(b.text))
+        l, n_pages = search_scraper(query=str(b.text))
+        self.n_pages = n_pages
+        self.a_query = str(b.text)
         #print("len", len(l))
         store.store_load()
-
+        store.store_put("a_query", str(b.text))
+        store.store_put("a_page", 0)
+        store.store_put("n_pages", n_pages)
         store.store_put("db",l)
         store.store_sync()
         #print(self.root.ids.bro_screen.children)
@@ -165,6 +164,7 @@ class SDLApp(MDApp):
         self.root.ids.bro_screen.children[0].data = store["db"]
         self.root.ids.tabs.switch_tab("Tutti")
         #self.root.ids.screen_manager.current = "bro_screen" 
+        toast(f"Trovate {n_pages} Pagine..")
 
 
     def search_prompt(self):

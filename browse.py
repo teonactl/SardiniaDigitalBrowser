@@ -13,7 +13,7 @@ import webbrowser
 from utils import *
 from kivymd.toast import toast
 from kivy.metrics import dp
-from kivymd.uix.button import MDIconButton
+from kivymd.uix.button import MDIconButton,MDFloatingActionButton
 from kivymd.uix.menu import MDDropdownMenu
 from kivy import platform
 
@@ -140,11 +140,44 @@ class BrowseViewer(RecycleView):
     def __init__(self, **kwargs):
         super(BrowseViewer, self).__init__(**kwargs)
         self.data = store["db"]
+        self.app = MDApp.get_running_app()
+        self.lastscroll = 0
 
     def update(self):
         store.store_load()
         self.data = store["db"]
         self.refresh_from_data()
+
+    def load_new_page(self):
+        store.store_load()
+
+        print("load new page")
+        print("n pages ->", store["n_pages"])
+        print("actual page=", store["a_page"])
+        print("actual query=", store["a_query"])
+        if self.app.a_page+1 <= store["n_pages"]:
+            toast("Caricando altri contenuti..")
+            new_page , n = self.app.s_scraper(query=store["a_query"], page=store["a_page"]+1)
+            print("adding elements ->",len(new_page))
+            n_el = len(new_page)
+            n_pr_el = len(self.data)
+            self.app.a_page =self.app.a_page+1
+            
+            store.store_put("db", self.data+new_page)
+            store.store_put("a_page", self.app.a_page)
+            store.store_sync()
+            self.data = self.data + new_page
+            scroll_index = n_pr_el / (n_pr_el+ n_el)
+            print("scrolling to ", scroll_index)
+            self.app.root.ids.tabs.switch_tab(self.app.last_tab)
+            self.app.tab_switch("blabla", self.app.last_tab)
+            self.scroll_y = scroll_index
+
+
+    def on_scroll_start(self, *args) :
+        if self.scroll_y == 0 :
+            self.load_new_page()
+        return super().on_scroll_start(*args)
 
 
 class PreferitiViewer(RecycleView):

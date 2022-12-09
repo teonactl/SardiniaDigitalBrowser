@@ -11,30 +11,25 @@ def md(soup, **options):
     return MarkdownConverter(**options).convert_soup(soup)
 
 #A Scraper for the Search Mode
-def search_scraper(query=""):
-	page_size = "100"
-	#query = "nuraghe"
-	page = 0
+def search_scraper(query="", page=0):
 	query = "%20".join(query.split(" "))
-
-	#f_page = requests.get("https://www.sardegnadigitallibrary.it/index.php?xsl=2435&ric=2&c1="+query+"&c=4459&ti=")
-	#soup = BeautifulSoup(f_page.content, "html.parser")
-	#n_results = soup.find("span", class_="badge bg-primary disabled")
-	#print(n_results)
+	print("SCRAPERACTIVATED________searching... ",query)
+	f_page = requests.get("https://www.sardegnadigitallibrary.it/index.php?xsl=2435&ric=2&c1="+query+"&c=4459&ti=")
+	fsoup = BeautifulSoup(f_page.content, "html.parser")
+	n_results = fsoup.find("span", class_="badge bg-primary disabled")
 	base_url = "https://www.sardegnadigitallibrary.it"
-	#paging_url = "https://www.sardegnadigitallibrary.it/index.php?xsl=2451&tipo=0&o=1&c1="+query+"&n="+page_size+"&p="+page
+	print(f"n_ results{n_results.text}") 
+	print("page size-->",100)
+	n_pages = int((int(n_results.text)/100))+1
+	print("num pages-->", n_pages)
+	res_list = []
 	paging_url = "https://www.sardegnadigitallibrary.it/index.php?xsl=2451&tipo=0&o=1&c1="+query+"&n=100&p="+str(page)
-	#print(paging_url)
 	page = requests.get(paging_url)
 	soup = BeautifulSoup(page.content, "html.parser")
 
 
 	result_container = soup.find_all("div", class_="col-md-3 col-sm-6 col-xs-12 tmargin")
-	print(len(result_container))
-	#print("result_container",result_container)
-	#print(f"{len(result_container)}/{n_results.text}") 
-	res_list = []
-	
+
 	for res in result_container:
 		res_o = {}
 		cat = res.find("span", class_="text-primary")
@@ -51,7 +46,8 @@ def search_scraper(query=""):
 		res_o["uid"]= str(abs(hash( res_o["link"]+res_o["title"]))) #uuid.uuid1().__str__()
 		res_o["preferito"]= False
 		res_list.append(res_o)
-	return res_list
+	print("res_list len->",len(res_list))
+	return res_list, n_pages
 
 
 
