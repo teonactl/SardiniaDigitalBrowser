@@ -1,6 +1,8 @@
-bin/
 .buildozer/
 buildozer.spec
 __pycache__/
 shim/
 mockdb.html
+out
+factor.py
+
