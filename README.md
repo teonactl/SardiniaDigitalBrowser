@@ -8,11 +8,12 @@ Un App multipiattaforma sviluppata con Python, Kivy e KivyMD per esplorare i con
 ## Installazione su Linux o Windows
 
 ```
-$ pip install -r requirements.txt
 
 $ git clone https://github.com/teonactl/SardiniaDigitalExplorer.git
 
 $ cd SardiniaDigitalExplorer
+
+$ pip install -r requirements.txt
 
 $ python main.py
 ```

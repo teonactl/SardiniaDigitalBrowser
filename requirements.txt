@@ -1,0 +1,9 @@
+kivy
+kivymd
+requests
+beautifulsoup4
+ffpyplayer
+openssl
+pyjnius
+markdownify
+
