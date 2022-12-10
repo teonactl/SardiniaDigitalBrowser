@@ -38,10 +38,6 @@ from audio import *
 import ssl
 ssl._create_default_https_context = ssl._create_unverified_context
 
-if kivy.platform == "linux":
-    Window.size = (450, 740)
-    #Window.size = (740,450)
-
 
 
 # The main kv file is loaded indipendently because of naming rules [ call it like your App class instance less the final "App" eg: NavigationApp--> navigation.kv]
@@ -158,7 +154,7 @@ Puoi cercare contenuti o scegliere le categorie dal menù laterale, puoi salvare
 info_string = """
 [b]Autore[/b] teonactl
 [b]Mail[/b] teonactl@hotmail.it
-[b]Source[/b] https://github.com/teonactl/SardegnaDigitalExplorer
+[b]Source[/b] https://github.com/teonactl/SardiniaDigitalExplorer
 """
 #Welcome Dialog class
 class Welcome(MDBoxLayout):
