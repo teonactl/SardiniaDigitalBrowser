@@ -13,15 +13,19 @@ def md(soup, **options):
 #A Scraper for the Search Mode
 def search_scraper(query="", page=0):
 	query = "%20".join(query.split(" "))
-	print("SCRAPERACTIVATED________searching... ",query)
+	#print("SCRAPERACTIVATED________searching... ",query, "page-_>", page)
 	f_page = requests.get("https://www.sardegnadigitallibrary.it/index.php?xsl=2435&ric=2&c1="+query+"&c=4459&ti=")
 	fsoup = BeautifulSoup(f_page.content, "html.parser")
 	n_results = fsoup.find("span", class_="badge bg-primary disabled")
 	base_url = "https://www.sardegnadigitallibrary.it"
-	print(f"n_ results{n_results.text}") 
-	print("page size-->",100)
-	n_pages = int((int(n_results.text)/100))+1
-	print("num pages-->", n_pages)
+	#print(f"n_ results{n_results.text}") 
+	#print("page size-->",100)
+	try :
+		n_pages = int((int(n_results.text)/100))+1
+	except :
+		m_toast("Nessun Risultato !")
+		return [], 0
+	#print("num pages-->", n_pages)
 	res_list = []
 	paging_url = "https://www.sardegnadigitallibrary.it/index.php?xsl=2451&tipo=0&o=1&c1="+query+"&n=100&p="+str(page)
 	page = requests.get(paging_url)
@@ -46,7 +50,7 @@ def search_scraper(query="", page=0):
 		res_o["uid"]= str(abs(hash( res_o["link"]+res_o["title"]))) #uuid.uuid1().__str__()
 		res_o["preferito"]= False
 		res_list.append(res_o)
-	print("res_list len->",len(res_list))
+	#print("res_list len->",len(res_list))
 	return res_list, n_pages
 
 

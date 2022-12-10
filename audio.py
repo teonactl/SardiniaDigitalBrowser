@@ -39,6 +39,11 @@ class MySlider(Slider):
 
 
 class MusicPlayer(MDRelativeLayout):
+    def exit(self):
+        try:
+            self.stopaudio("stop")
+        except:
+            pass
     def __init__(self, **kwargs):
         self.last_time = None
         self.startload = None     
@@ -124,7 +129,6 @@ class MusicPlayer(MDRelativeLayout):
         self.add_widget(layout)
         self.progressbar.max = self.sound.length
         return layout
-
 
     def position(self, pos):
         self.pauseaudio(self)

@@ -1,3 +1,11 @@
+from kivy.clock import  mainthread
+from kivymd.toast import toast
+
+
+
+@mainthread
+def m_toast(text):
+    toast(text)
 
 
 

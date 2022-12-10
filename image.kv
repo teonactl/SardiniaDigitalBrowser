@@ -2,8 +2,7 @@
 <ImageScreen>:
     name :"img_screen"
     id : img_screen
-    #on_leave :  s = gen; self.clear_widgets(); self.add_widget(s) #image.reload()#print(image.size); image.size = dp(400), dp(400)
-    on_enter : image.size =  dp(400), dp(400) / image.image_ratio; print (image.size)
+    on_leave :  scatter.scale = 1; scatter.rotation = 0
     MDBoxLayout:
         id :gen
         orientation: "vertical"
@@ -23,23 +22,20 @@
                         markup: True
                             
 
-        StencilView:
-            id: f_lay
-            size_hint_y : .6
-
-            ScatterLayout:
-                #on_size: self.center = img_screen.center
-                size: image.size
-                size_hint: None, None
-                do_translation_y : False
-
-                AsyncImage:
-                    id: image
-                    nocache : False
-                    source: '' 
+        MyScatter:
+            id : scatter
+            #on_size: self.center = img_screen.center
+            size: image.size
+            size_hint: None, None
+            do_translation_y : False
+            do_collide_after_children :False
+            AsyncImage:
+                id: image
+                nocache : False
+                source: '' 
                     #on_load_fail : print("LOADED",app.res_link)
 
                     # create initial image to be 400 pixels width
-                    size: 400, 400 / self.image_ratio
+                size: 400, 400 / self.image_ratio
 
          

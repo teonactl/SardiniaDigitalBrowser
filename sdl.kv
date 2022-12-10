@@ -20,24 +20,20 @@
         id : main_box
         orientation: "vertical"
         tabs: tabs.__self__
-
-        #adaptive_height : True
-        #size_hint_y : 1
         MDTopAppBar:
-            padding : 0
+            padding : 10
             id : topbar
             auto_bring_to_front: True
-
+            title : app.store["a_query"]
             pos_hint: {"top": 1}
-            #elevation: 4
             left_action_items: [["menu", lambda x: nav_drawer.set_state("open")]] if screen_manager.current =="bro_screen" or screen_manager.current =="pre_screen"  else [["arrow-left", lambda x:app.go_back()]]
-            right_action_items : [["magnify", lambda z : app.search_prompt()]]
+            right_action_items : [["magnify", lambda z : app.search_prompt()]] if screen_manager.current =="bro_screen"  else []
 
         MDTabs:
             on_tab_switch: app.tab_switch(*args)
             size_hint_y: None
             height: dp(50)
-            tab_indicator_type : "round" 
+            tab_indicator_type : "line" 
             id : tabs
             Tab:            
                 title: "Tutti"
@@ -59,15 +55,16 @@
             id : nav_layout
 
             MyScreenManager:
-                on_current : main_box.remove_widget(tabs) 
+                on_current : main_box.remove_widget(tabs) ;
                 id: screen_manager
 
                 BrowseScreen:
-                    on_enter : app.store.store_sync(); main_box.add_widget(tabs, -1) ;tabs.switch_tab(app.last_tab)
+                    on_enter : app.store.store_sync(); main_box.add_widget(tabs, -1) ;tabs.switch_tab(app.last_tab); root.ids.topbar.left_action_items = [["menu", lambda x: nav_drawer.set_state("open")]] 
                     name : "bro_screen"
                     id: bro_screen                   
                 PrefScreen:
-                    on_enter : main_box.add_widget(tabs, -1) ; tabs.switch_tab(app.last_tab)
+                    on_enter : main_box.add_widget(tabs, -1) ; tabs.switch_tab(app.last_tab); topbar.title = "Perferiti"
+                    on_leave : topbar.title =app.store["a_query"]
                     name : "pre_screen"
                     id : pre_screen
                 ImageScreen:
@@ -94,7 +91,7 @@
                 on_state : app.store.store_load();print("touch",str(len(app.store["preferiti"])) );pref_indicator.right_text = str(len(app.store["preferiti"]))
 
                 MDNavigationDrawerMenu:
-
+                    id : nav_menu
 
                     MDNavigationDrawerHeader:
                         title: "SDE"
@@ -123,10 +120,358 @@
                             screen_manager.current = "pre_screen"
                             nav_drawer.set_state("close")
 
-                    MDNavigationDrawerDivider:
 
-                    DrawerLabelItem:
+                    DrawerClickableItem:
                         icon: "information-outline"
                         text: "Info"
+                        on_release:  nav_drawer.set_state("close"); app.info_dialog()
+
+                    MDNavigationDrawerDivider:
 
 
+
+                    DrawerClickableItem:
+                        text:"VIDEO"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Cortometraggi"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Cinegiornali"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Concerti e festival"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Convegni e seminari"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Documentari"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Documenti multimediali"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Film"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Gare poetiche"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Interviste"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Programmi televisivi"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Rappresentazioni teatrali"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Spot"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Video istituzionali"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"IMMAGINI"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Ambiente e territorio"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Archeologia"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Architettura"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Arte"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Artigianato"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Atti di governo"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Economia e società"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Cartografia"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Enogastronomia"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Eventi"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Flora e fauna"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Letteratura"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Luoghi della cultura"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Spettacolo"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Sport"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Storia e tradizioni"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"AUDIO"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Canti a chitarra"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Canti a tenore"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Canti monodici"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Canti polivocali"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Canti sacri"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Discorsi"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Favole"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Gare poetiche"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Interviste"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Musica contemporanea"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Narrativa"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Poesie"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Strumenti"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Trasmissioni radiofoniche"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"TESTI"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Annuari"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Atti di convegno"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Brochure"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Cataloghi"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Dizionari - enciclopedie"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Documenti d'archivio"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Guide"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Epistolari"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Libretti"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Monografie - saggi"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Narrativa"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Periodici"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Poesie"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"ARGOMENTI"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Ambiente e territorio"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Archeologia"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Architettura"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Arte"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Artigianato"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Atti di governo"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Cartografia"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Economia e società"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Enogastronomia"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Eventi"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Flora e fauna"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Letteratura"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Lingua sarda"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Luoghi della cultura"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Musica"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Spettacolo"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Sport"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+                    DrawerClickableItem:
+                        text:"Storia e tradizioni"
+                        on_press : app.but_cb(self)
+                        text_color : "#4a4939"
+
+
+
+
+<Welcome>
+    orientation: "vertical"
+    spacing: "12dp"
+    adaptive_height: True
+    id : welcom
+    height: "300dp"
+    #width: "90dp"
+
+
+    ScrollView:
+        MDLabel:
+            markup: True
+            adaptive_height: True
+            text: welcom.text
+
+<Info>
+    orientation: "vertical"
+    spacing: "12dp"
+    adaptive_height: True
+    id : info
+
+    MDLabel:
+        markup: True
+        adaptive_height: True
+        text: info.text

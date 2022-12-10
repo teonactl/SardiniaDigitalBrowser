@@ -17,6 +17,8 @@ from kivymd.uix.button import MDIconButton,MDFloatingActionButton
 from kivymd.uix.menu import MDDropdownMenu
 from kivy import platform
 
+import threading , time
+
 if platform == 'android':
     from jnius import autoclass           
 
@@ -55,13 +57,10 @@ class SDLCard(RecycleDataViewBehavior, MDCard):
 
     def menu_callback(self, btype):
         self.app = MDApp.get_running_app()
-        print("MENUUU",btype, self.re_link)
         if btype == "web":
             self.app.openlink(self.re_link)
         elif btype == "share":
-            print("share")
-            self.share("Ciao",self.re_link)
-
+            self.share("SDE",self.re_link)
         self.menu.dismiss()
         self.re_link = None
 
@@ -98,7 +97,7 @@ class SDLCard(RecycleDataViewBehavior, MDCard):
         store.store_load()
         pref = store["preferiti"]
         self.app.last_tab = tabs.get_current_tab().title
-        print(self.app.last_tab)
+       # print(self.app.last_tab)
         if any(ob['uid'] == obj.uid for ob in pref):
             if manager.current == "bro_screen":
                 return toast("E' già nei Preferiti!")
@@ -108,7 +107,7 @@ class SDLCard(RecycleDataViewBehavior, MDCard):
                         pref.pop(pref.index(o))
                         store.store_put("preferiti", pref)
                         store.store_sync()
-                        print(self.app.last_tab)
+                        #print(self.app.last_tab)
 
                         prv.update()
                         self.app.tab_switch(self.app.last_tab)
@@ -124,7 +123,7 @@ class SDLCard(RecycleDataViewBehavior, MDCard):
         tabs.switch_tab(self.app.last_tab)
 
         #rv.update()
-        print(self.app.last_tab)
+        #print(self.app.last_tab)
         toast(f"Aggiunto ai preferiti!")
         return
       
@@ -142,43 +141,78 @@ class BrowseViewer(RecycleView):
         self.data = store["db"]
         self.app = MDApp.get_running_app()
         self.lastscroll = 0
+        self.loading = False
 
     def update(self):
         store.store_load()
         self.data = store["db"]
         self.refresh_from_data()
 
-    def load_new_page(self):
+    def load_new_page(self, b):
         store.store_load()
-
-        print("load new page")
-        print("n pages ->", store["n_pages"])
-        print("actual page=", store["a_page"])
-        print("actual query=", store["a_query"])
         if self.app.a_page+1 <= store["n_pages"]:
-            toast("Caricando altri contenuti..")
-            new_page , n = self.app.s_scraper(query=store["a_query"], page=store["a_page"]+1)
-            print("adding elements ->",len(new_page))
-            n_el = len(new_page)
+            x = threading.Thread(target=self.thread_load)
+            x.start()
+        else:
+             toast("Contenuti completi!")
+        self.app.root.ids.bro_screen.remove_widget(b)
+           
+
+    def thread_load(self):
+        self.loading = True
+        store.store_load()
+        m_toast("Caricando altri contenuti..")
+
+        new_page , n = self.app.s_scraper(query=store["a_query"], page=store["a_page"]+1)
+        #print("adding elements ->",len(new_page))
+
+        if self.app.last_tab == "Tutti":
+            #print("reloafing for TUTTI")
             n_pr_el = len(self.data)
-            self.app.a_page =self.app.a_page+1
+            n_el = len(new_page)
+            if n_el == 0:
+                m_toast(f"Nessun nuovo contenuto!")
+            else :
+                m_toast(f"Caricate altre {n_el} risorse! ")
+     
+        else : 
+            #print("RELOADING FOR", self.app.last_tab)
+            n_pr_el = len([ i for i in self.data if i["cat"] ==self.app.last_tab.upper()])
+            n_el = len([ i for i in new_page if i["cat"] == self.app.last_tab.upper()])
+
+            if n_el == 0:
+                m_toast(f"Nessun contenuto per la categoria {self.app.last_tab}.\n Continua a caricare, ancora {self.app.n_pages-self.app.a_page } pagine disponibili..")
+            else :
+                m_toast(f"Caricati altri {n_el} {self.app.last_tab} ")
+        self.app.a_page =self.app.a_page+1
             
-            store.store_put("db", self.data+new_page)
-            store.store_put("a_page", self.app.a_page)
-            store.store_sync()
-            self.data = self.data + new_page
-            scroll_index = n_pr_el / (n_pr_el+ n_el)
-            print("scrolling to ", scroll_index)
-            self.app.root.ids.tabs.switch_tab(self.app.last_tab)
-            self.app.tab_switch("blabla", self.app.last_tab)
-            self.scroll_y = scroll_index
+        store.store_put("db", self.data+new_page)
+        store.store_put("a_page", self.app.a_page)
+        store.store_sync()
+        self.data = self.data + new_page
+        scroll_index = 1- (n_pr_el / (n_pr_el+ n_el) )
+        self.app.root.ids.tabs.switch_tab(self.app.last_tab)
+        self.app.tab_switch("blabla", self.app.last_tab)
+        self.scroll_y = scroll_index
+        self.loading = False
 
 
-    def on_scroll_start(self, *args) :
-        if self.scroll_y == 0 :
-            self.load_new_page()
-        return super().on_scroll_start(*args)
+    def on_scroll_stop(self, *args) :
+        if self.scroll_y <= 0.01 :
+            #print("nElements->",self.app.root.ids.bro_screen.children)
+            if len(self.app.root.ids.bro_screen.children) ==1 and  not self.loading :
 
+                but =   MDFloatingActionButton(
+                                        icon ="refresh",
+                                        pos_hint={"x":0.45, "y":0},
+                                        on_press = self.load_new_page,
+                                        )
+
+                self.app.root.ids.bro_screen.add_widget(but)
+                
+
+
+        return super().on_scroll_stop(*args)
 
 class PreferitiViewer(RecycleView):
     def __init__(self, **kwargs):
